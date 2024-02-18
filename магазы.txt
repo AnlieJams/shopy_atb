@@ -1,0 +1,89 @@
+--1. Сколько сделал товаров, мужик?
+
+SELECT 
+    manufacturer,
+    COUNT(*) AS total_products,
+    (COUNT(*) * 100.0 / (SELECT COUNT(*) FROM products)) AS percentage
+FROM 
+    products
+GROUP BY 
+    manufacturer;
+
+--2.Трио
+
+SELECT 
+    manufacturer
+FROM 
+    products
+WHERE 
+    manufacturer IN (
+        SELECT 
+            manufacturer
+        FROM 
+            products
+        GROUP BY 
+            manufacturer
+        HAVING 
+            COUNT(*) > 3
+    );
+
+--4. Йогуртики топ-1
+
+SELECT 
+    name
+FROM 
+    suppliers
+WHERE 
+    name NOT IN (
+        SELECT 
+            supplier
+        FROM 
+            products
+        WHERE 
+            product = 'йогурт "няма-няма" '
+    );
+
+--5. Товары зелёноглазых таксистов
+
+SELECT 
+    m.name
+FROM 
+    devs m
+JOIN 
+    frims c ON m.country = c.country
+WHERE 
+    c.name = 'ООО "Зеленоглазое такси"';
+
+
+--6. Сайтаймс лайф из хорибл.
+
+
+SELECT 
+    manufacturer
+FROM 
+    products
+GROUP BY 
+    manufacturer
+HAVING 
+    COUNT(DISTINCT product_name) > (
+        SELECT 
+            COUNT(DISTINCT product_name)
+        FROM 
+            products
+        WHERE 
+            manufacturer = 'ООО "Самтаймс"'
+    );
+
+--7. Покупка из АТБ
+
+SELECT 
+    sale_date,
+    SUM(quantity_sold) AS total_sales
+FROM 
+    sales
+WHERE 
+    sale_date >= '2023-11-15'
+GROUP BY 
+    sale_date
+ORDER BY 
+    sale_date DESC;
